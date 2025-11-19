@@ -48,26 +48,26 @@ void setupRegs() {
     LATEbits.LATE0 = 0; // começa desligado
 }
 
-void delay_CPU_CLOCKS(uint32_t qtd) {
+void delayCpuClocks(uint32_t qtd) {
     uint32_t CP0_qtd = qtd / 2;
     uint32_t target = _CP0_GET_COUNT() + CP0_qtd;
     while (_CP0_GET_COUNT() < target);
 }
 
-void delay_1ms_CPU_CLOCKS() {
-    delay_CPU_CLOCKS(80e3);
+void delayCpuClocks1ms() {
+    delayCpuClocks(80e3);
 }
 
-void delay_1s_CPU_CLOCKS() {
-    delay_CPU_CLOCKS(80e6);
+void delayCpuClocks1s() {
+    delayCpuClocks(80e6);
 }
 
-void delay_500ms_CPU_CLOCKS() {
-    delay_CPU_CLOCKS(0.5 * 80e6);
+void delayCpuClocks500ms() {
+    delayCpuClocks(0.5 * 80e6);
 }
 
-void delay_Xms_CPU_CLOCKS(uint32_t qtd) {
-    delay_CPU_CLOCKS(qtd * 80e3);
+void delayCpuClocksXms(uint32_t qtd) {
+    delayCpuClocks(qtd * 80e3);
 }
 
 int main(void) {
@@ -78,11 +78,11 @@ int main(void) {
     while (1) {
         temp++;
         LATEbits.LATE0 = 1;
-        delay_500ms_CPU_CLOCKS();
+        delayCpuClocks500ms();
 
-        temp++;
+        temp++;delay_
         LATEbits.LATE0 = 0;
-        delay_Xms_CPU_CLOCKS(500);
+        delayCpuClocksXms(500);
 
     }
 }

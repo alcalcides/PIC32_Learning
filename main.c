@@ -41,33 +41,12 @@
 
 #include <xc.h>
 #include <stdint.h>
+#include "delayCpuClocks.h"
 
 void setupRegs() {
     // configura RE0 como saída
     TRISEbits.TRISE0 = 0;
     LATEbits.LATE0 = 0; // começa desligado
-}
-
-void delayCpuClocks(uint32_t qtd) {
-    uint32_t CP0_qtd = qtd / 2;
-    uint32_t target = _CP0_GET_COUNT() + CP0_qtd;
-    while (_CP0_GET_COUNT() < target);
-}
-
-void delayCpuClocks1ms() {
-    delayCpuClocks(80e3);
-}
-
-void delayCpuClocks1s() {
-    delayCpuClocks(80e6);
-}
-
-void delayCpuClocks500ms() {
-    delayCpuClocks(0.5 * 80e6);
-}
-
-void delayCpuClocksXms(uint32_t qtd) {
-    delayCpuClocks(qtd * 80e3);
 }
 
 int main(void) {
@@ -80,7 +59,7 @@ int main(void) {
         LATEbits.LATE0 = 1;
         delayCpuClocks500ms();
 
-        temp++;delay_
+        temp++;
         LATEbits.LATE0 = 0;
         delayCpuClocksXms(500);
 

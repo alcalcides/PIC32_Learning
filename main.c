@@ -1,0 +1,88 @@
+// PIC32MX795F512L Configuration Bit Settings
+
+// 'C' source line config statements
+
+// DEVCFG3
+#pragma config USERID = 0xFFFF          // Enter Hexadecimal value (Enter Hexadecimal value)
+#pragma config FSRSSEL = PRIORITY_7     // SRS Select (SRS Priority 7)
+#pragma config FMIIEN = ON              // Ethernet RMII/MII Enable (MII Enabled)
+#pragma config FETHIO = ON              // Ethernet I/O Pin Select (Default Ethernet I/O)
+#pragma config FCANIO = ON              // CAN I/O Pin Select (Default CAN I/O)
+#pragma config FUSBIDIO = ON            // USB USID Selection (Controlled by the USB Module)
+#pragma config FVBUSONIO = ON           // USB VBUS ON Selection (Controlled by USB Module)
+
+// DEVCFG2
+#pragma config FPLLIDIV = DIV_1         // PLL Input Divider (1x Divider)
+#pragma config FPLLMUL = MUL_20         // PLL Multiplier (20x Multiplier)
+#pragma config UPLLIDIV = DIV_12        // USB PLL Input Divider (12x Divider)
+#pragma config UPLLEN = OFF             // USB PLL Enable (Disabled and Bypassed)
+#pragma config FPLLODIV = DIV_1         // System PLL Output Clock Divider (PLL Divide by 1)
+
+// DEVCFG1
+#pragma config FNOSC = PRIPLL           // Oscillator Selection Bits (Primary Osc w/PLL (XT+,HS+,EC+PLL))
+#pragma config FSOSCEN = ON             // Secondary Oscillator Enable (Enabled)
+#pragma config IESO = ON                // Internal/External Switch Over (Enabled)
+#pragma config POSCMOD = XT             // Primary Oscillator Configuration (XT osc mode)
+#pragma config OSCIOFNC = OFF           // CLKO Output Signal Active on the OSCO Pin (Disabled)
+#pragma config FPBDIV = DIV_1           // Peripheral Clock Divisor (Pb_Clk is Sys_Clk/1)
+#pragma config FCKSM = CSDCMD           // Clock Switching and Monitor Selection (Clock Switch Disable, FSCM Disabled)
+#pragma config WDTPS = PS1048576        // Watchdog Timer Postscaler (1:1048576)
+#pragma config FWDTEN = OFF             // Watchdog Timer Enable (WDT Disabled (SWDTEN Bit Controls))
+
+// DEVCFG0
+#pragma config DEBUG = OFF              // Background Debugger Enable (Debugger is disabled)
+#pragma config ICESEL = ICS_PGx2        // ICE/ICD Comm Channel Select (ICE EMUC2/EMUD2 pins shared with PGC2/PGD2)
+#pragma config PWP = OFF                // Program Flash Write Protect (Disable)
+#pragma config BWP = OFF                // Boot Flash Write Protect bit (Protection Disabled)
+#pragma config CP = OFF                 // Code Protect (Protection Disabled)
+
+// #pragma config statements should precede project file includes.
+// Use project enums instead of #define for ON and OFF.
+
+#include <xc.h>
+#include <stdint.h>
+
+void setupRegs() {
+    // configura RE0 como saída
+    TRISEbits.TRISE0 = 0;
+    LATEbits.LATE0 = 0; // começa desligado
+}
+
+void delay_CPU_CLOCKS(uint32_t qtd) {
+    uint32_t CP0_qtd = qtd / 2;
+    uint32_t target = _CP0_GET_COUNT() + CP0_qtd;
+    while (_CP0_GET_COUNT() < target);
+}
+
+void delay_1ms_CPU_CLOCKS() {
+    delay_CPU_CLOCKS(80e3);
+}
+
+void delay_1s_CPU_CLOCKS() {
+    delay_CPU_CLOCKS(80e6);
+}
+
+void delay_500ms_CPU_CLOCKS() {
+    delay_CPU_CLOCKS(0.5 * 80e6);
+}
+
+void delay_Xms_CPU_CLOCKS(uint32_t qtd) {
+    delay_CPU_CLOCKS(qtd * 80e3);
+}
+
+int main(void) {
+    char temp = 0x00;
+
+    setupRegs();
+
+    while (1) {
+        temp++;
+        LATEbits.LATE0 = 1;
+        delay_500ms_CPU_CLOCKS();
+
+        temp++;
+        LATEbits.LATE0 = 0;
+        delay_Xms_CPU_CLOCKS(500);
+
+    }
+}

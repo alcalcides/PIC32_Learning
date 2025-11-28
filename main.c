@@ -42,26 +42,28 @@
 #include <xc.h>
 #include <stdint.h>
 #include "delayCpuClocks.h"
+#include "GPIOPinSetting.h"
 
 void setupRegs() {
-    // configura RE0 como saída
-    TRISEbits.TRISE0 = 0;
-    LATEbits.LATE0 = 0; // começa desligado
+    TRISEbits.TRISE1 = INPUT; // configura RE1 como entrada (digital?)
+
+    TRISEbits.TRISE0 = OUTPUT; // configura RE0 como saída
+    LATEbits.LATE0 = LOW; // começa desligado
 }
 
 int main(void) {
-    char temp = 0x00;
+    uint32_t temp = 0x00;
 
     setupRegs();
 
     while (1) {
         temp++;
-        LATEbits.LATE0 = 1;
-        delayCpuClocks500ms();
-
-        temp++;
-        LATEbits.LATE0 = 0;
-        delayCpuClocksXms(500);
+        if (PORTEbits.RE1 == LOW) {
+            LATEbits.LATE0 = LOW;
+            delayCpuClocks250ms();
+        } else {
+            LATEbits.LATE0 = HIGH;
+        }
 
     }
 }

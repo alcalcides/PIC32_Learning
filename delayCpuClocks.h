@@ -33,7 +33,7 @@ extern "C" {
     }
 
     static inline void delayCpuClocks250ms() {
-        delayCpuClocks(20000000a); //0.25 * 80e6
+        delayCpuClocks(20000000); //0.25 * 80e6
     }
 
     static inline void delayCpuClocksXms(uint32_t qtd) {

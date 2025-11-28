@@ -58,7 +58,7 @@ int main(void) {
 
     while (1) {
         temp++;
-        if (PORTEbits.RE1 == LOW) {
+        if (PORTEbits.RE1 == BUTTON_PRESSED) {
             LATEbits.LATE0 = LOW;
             delayCpuClocks250ms();
         } else {

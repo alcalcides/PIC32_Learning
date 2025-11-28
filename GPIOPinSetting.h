@@ -18,6 +18,9 @@ extern "C" {
 #define HIGH 1
 #define LOW 0
 
+#define BUTTON_PRESSED 0
+#define BUTTON_RELEASED 1
+
 
 #ifdef	__cplusplus
 }

@@ -44,10 +44,9 @@
 #include "delayCpuClocks.h"
 #include "GPIOPinSetting.h"
 
-void setupRegs() {
-    INTCONbits.MVEC = 1; // habilita modo multi-vetor
-    __builtin_enable_interrupts(); // habilita interrupções globais
+uint8_t testState = 0;
 
+void setupRegs() {
     //  Timer 2
     T2CON = 0; // desabilitar o clock (por garantia)
     T2CONbits.TCS = 0; // clock do barramento (40 MHz)
@@ -55,31 +54,42 @@ void setupRegs() {
     PR2 = 0xFFFF; // 0.419 segundos
     TMR2 = 0; // zerar o cronômetro 2
 
+    // Interrupções
+    INTCONbits.MVEC = 1; // habilita modo multi-vetor
+    __builtin_enable_interrupts(); // habilita interrupções globais
+
     //  Interrupção do timer 2
     IFS0bits.T2IF = 0; // Clear flag
     IEC0bits.T2IE = 1; // habilitar a interrupção
     IPC2bits.T2IP = 4; // prioridade 4 (prioridade média)
 
     //  Buttons
-    TRISEbits.TRISE1 = INPUT; // configurar RE1 como entrada (digital? SIM)
+    TRISEbits.TRISE1 = INPUT; // configurar RE1 como entrada
 
-    //  LED da placa PIC100-A
+    //  Lock e LED da placa PIC100-A
     TRISEbits.TRISE0 = OUTPUT; // configura RE0 como saída
     LATEbits.LATE0 = LOW; // começa desligado
 }
 
+
 void __attribute__((interrupt(IPL4AUTO), vector(_TIMER_2_VECTOR))) T2ISR(void) {
     IFS0bits.T2IF = 0; // Limpa flag
-    LATEbits.LATE0 ^= 1; // Alterna o LED
+
+    if (testState % 4 == 0) {
+        LATEbits.LATE0 ^= 1; // Alterna o LED
+    }
+
+    testState++;
 }
+
 
 int main(void) {
     setupRegs();
 
-    T2CONbits.ON = 1; // ligar o timer 2
-
-
     while (1) {
-
+        if (PORTEbits.RE1 == BUTTON_PRESSED) {
+            delayCpuClocks250ms();
+            T2CONbits.ON = !T2CONbits.ON;
+        }
     }
 }
